@@ -6,7 +6,7 @@ import enrollmentRepository, { CreateEnrollmentParams } from '@/repositories/enr
 import { exclude } from '@/utils/prisma-utils';
 
 // TODO - Receber o CEP por parâmetro nesta função.
-async function getAddressFromCEP(CEP: number) {
+async function getAddressFromCEP(CEP: String) {
 
   // FIXME: está com CEP fixo!
   const result = await request.get(`${process.env.VIA_CEP_API}/${CEP}/json/`);
