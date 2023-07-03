@@ -50,7 +50,10 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   console.log("add",address)
   console.log(params.address.cep)
   const result = await request.get(`${process.env.VIA_CEP_API}/${address.cep}/json/`);
-  if(!result || result.data.erro===true) throw notFoundError();
+  if(!result || result.data.erro===true) {
+    console.log("nao existe")
+    throw notFoundError();
+  }
   console.log("result",result.data)
   // TODO - Verificar se o CEP é válido antes de associar ao enrollment.
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, 'userId'));
