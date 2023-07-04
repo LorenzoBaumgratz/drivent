@@ -4,18 +4,26 @@ import { invalidDataError, notFoundError } from '@/errors';
 import addressRepository, { CreateAddressParams } from '@/repositories/address-repository';
 import enrollmentRepository, { CreateEnrollmentParams } from '@/repositories/enrollment-repository';
 import { exclude } from '@/utils/prisma-utils';
+import { AddressEnrollment } from '@/protocols';
 
-// TODO - Receber o CEP por parâmetro nesta função.
-async function getAddressFromCEP(CEP: String) {
+async function getAddressFromCEP(cep: string): Promise<AddressEnrollment> {
+  const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
 
-  // FIXME: está com CEP fixo!
-  const result = await request.get(`${process.env.VIA_CEP_API}/${CEP}/json/`);
-
-  if (!result.data) {
+  if (!result.data || result.data.erro) {
     throw notFoundError();
   }
-  // FIXME: não estamos interessados em todos os campos
-  return result.data;
+
+  const { bairro, localidade, uf, complemento, logradouro } = result.data;
+
+  const address: AddressEnrollment = {
+    bairro,
+    cidade: localidade,
+    uf,
+    complemento,
+    logradouro,
+  };
+
+  return address;
 }
 
 async function getOneWithAddressByUserId(userId: number): Promise<GetOneWithAddressByUserIdResult> {
@@ -43,21 +51,13 @@ function getFirstAddress(firstAddress: Address): GetAddressResult {
 type GetAddressResult = Omit<Address, 'createdAt' | 'updatedAt' | 'enrollmentId'>;
 
 async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollmentWithAddress) {
-  
-
   const enrollment = exclude(params, 'address');
   const address = getAddressForUpsert(params.address);
-  console.log("add",address)
-  console.log(params.address.cep)
-  const result = await request.get(`${process.env.VIA_CEP_API}/${address.cep}/json/`);
-  if(!result || result.data.erro===true) {
-    console.log("nao existe")
-    throw notFoundError();
-  }
-  console.log("result",result.data)
-  // TODO - Verificar se o CEP é válido antes de associar ao enrollment.
+
+  await getAddressFromCEP(address.cep);
+
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, 'userId'));
-  console.log("new",newEnrollment)
+
   await addressRepository.upsert(newEnrollment.id, address, address);
 }
 

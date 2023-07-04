@@ -15,7 +15,6 @@ async function upsert(
   createdEnrollment: CreateEnrollmentParams,
   updatedEnrollment: UpdateEnrollmentParams,
 ) {
-  
   return prisma.enrollment.upsert({
     where: {
       userId,
