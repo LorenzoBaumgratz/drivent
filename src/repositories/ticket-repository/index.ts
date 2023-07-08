@@ -4,10 +4,13 @@ export async function getTicketsTypesRep() {
     return prisma.ticketType.findMany()
 }
 
-export async function getTicketsRep() {
-    return prisma.ticket.findMany({
+export async function getTicketRep(enrollmentId:number) {
+    return prisma.ticket.findFirst({
         include:{
-            TicketType:true
+            TicketType:true,
+        },
+        where:{
+            enrollmentId
         }
     })
 }

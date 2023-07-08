@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { getTicketById, getTicketsRep, getTicketsTypesRep, postTicketRep } from "../repositories/ticket-repository";
+import { getTicketById, getTicketsTypesRep, postTicketRep } from "../repositories/ticket-repository";
 import { AuthenticatedRequest } from "../middlewares";
-import { postTicketService } from "../services/tickets-service";
+import { getTicketService, postTicketService } from "../services/tickets-service";
 
 export async function getTicketsTypes(req:AuthenticatedRequest,res:Response){
     try {
@@ -14,11 +14,13 @@ export async function getTicketsTypes(req:AuthenticatedRequest,res:Response){
 }
 
 export async function getTickets(req:AuthenticatedRequest,res:Response){
+  const userId=req.userId
   try {
-      const tickets=await getTicketsRep()
-      return res.status(httpStatus.OK).send(tickets);
+      const ticket=await getTicketService(userId)
+      console.log(ticket)
+      return res.status(httpStatus.OK).send(ticket);
     } catch (error) {
-      return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't get tickets"));
+      return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't get ticket"));
     }
 }
 
@@ -29,8 +31,9 @@ export async function postTicket(req:AuthenticatedRequest,res:Response){
   try {
       await postTicketService(ticketTypeId,userId)
       const ticket=await getTicketById(ticketTypeId)
-      return res.status(httpStatus.OK).send(ticket);
+      return res.status(201).send(ticket);
     } catch (error) {
+      if(error.name==="RequestError") return res.sendStatus(error.status)
       return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't post ticket"));
     }
 }
