@@ -22,7 +22,7 @@ export async function postPaymentsService(ticketId:number,cardData:{
     cvv:number
   },userId:number) {
     if(!ticketId || !cardData) throw requestError(400,"Bad request")
-    const existeTicket= await verifyTicketIdRep(ticketId)
+    const existeTicket= await verifyTicketIdRep(Number(ticketId))
     if(!existeTicket) throw notFoundError()
     const ticketVerify= await verifyTicketIdRep(Number(ticketId))
     const enrollment= await ticketIdLinkUserRep(ticketVerify.enrollmentId)
