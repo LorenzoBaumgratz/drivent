@@ -17,6 +17,7 @@ export async function getTicketService(userId:number) {
     if(!enrollment) throw notFoundError()
 
     if(enrollment.userId!==userId) throw notFoundError()
-
+    
     return await getTicketRep(enrollment.id)
 }
+

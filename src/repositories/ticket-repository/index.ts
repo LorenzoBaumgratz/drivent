@@ -40,3 +40,11 @@ export async function verifyTicketIdRep(ticketId:number) {
         }      
     })
 }
+
+export async function ticketIdLinkUserRep(enrollmentId:number) {
+    return await prisma.enrollment.findUnique({
+        where:{
+            id:enrollmentId
+        }      
+    })
+}
