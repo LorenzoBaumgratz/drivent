@@ -11,7 +11,7 @@ export async function getPaymentsService(ticketId:number,userId:number) {
 
     const ticketVerify= await verifyTicketIdRep(Number(ticketId))
     const enrollment= await ticketIdLinkUserRep(ticketVerify.enrollmentId)
-    if(enrollment.userId!==userId) throw unauthorizedError()
+    if(enrollment.userId!=userId) throw unauthorizedError()
 
     return await getPaymentsRep(ticketId)
 }
