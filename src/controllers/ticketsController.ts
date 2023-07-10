@@ -9,7 +9,7 @@ export async function getTicketsTypes(req:AuthenticatedRequest,res:Response){
         const ticketsTypes=await getTicketsTypesRep()
         return res.status(httpStatus.OK).send(ticketsTypes);
       } catch (error) {
-        return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't get tickets types"));
+        return res.status(httpStatus.NOT_FOUND).send("couldn't get tickets types");
       }
 }
 
@@ -20,7 +20,7 @@ export async function getTickets(req:AuthenticatedRequest,res:Response){
       console.log(ticket)
       return res.status(httpStatus.OK).send(ticket);
     } catch (error) {
-      return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't get ticket"));
+      return res.status(httpStatus.NOT_FOUND).send("couldn't get ticket");
     }
 }
 
@@ -34,6 +34,6 @@ export async function postTicket(req:AuthenticatedRequest,res:Response){
       return res.status(201).send(ticket);
     } catch (error) {
       if(error.name==="RequestError") return res.sendStatus(error.status)
-      return res.status(httpStatus.NOT_FOUND).send(console.log("couldn't post ticket"));
+      return res.status(httpStatus.NOT_FOUND).send("couldn't post ticket");
     }
 }

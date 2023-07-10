@@ -16,9 +16,9 @@ export async function getTicketRep(enrollmentId:number) {
 }
 
 export async function getTicketById(ticketId:number) {
-    return prisma.ticketType.findUnique({
-        where:{
-            id:ticketId
+    return prisma.ticket.findFirst({
+        include:{
+            TicketType:true
         }
     })
 }
@@ -30,5 +30,13 @@ export async function postTicketRep(ticketTypeId:number,enrollmentId:number) {
             enrollmentId,
             status:"RESERVED"
         }       
+    })
+}
+
+export async function verifyTicketIdRep(ticketId:number) {
+    return await prisma.ticket.findUnique({
+        where:{
+            id:ticketId
+        }      
     })
 }
