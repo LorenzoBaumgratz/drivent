@@ -49,13 +49,13 @@ export async function ticketIdLinkUserRep(enrollmentId:number) {
     })
 }
 
-export async function updateTicket(enrollmentId:number) {
+export async function updateTicket(ticketId:number) {
     return await prisma.ticket.update({
         data:{
             status:"PAID"
         },
         where:{
-            id:enrollmentId
+            id:ticketId
         }      
     })
 }

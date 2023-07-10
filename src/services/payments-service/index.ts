@@ -24,12 +24,13 @@ export async function postPaymentsService(ticketId:number,cardData:{
     if(!ticketId || !cardData) throw requestError(400,"Bad request")
     const existeTicket= await verifyTicketIdRep(Number(ticketId))
     if(!existeTicket) throw notFoundError()
+
     const ticketVerify= await verifyTicketIdRep(Number(ticketId))
     const enrollment= await ticketIdLinkUserRep(ticketVerify.enrollmentId)
     if(enrollment.userId!=userId) throw unauthorizedError()
 
     const ticket=await getTicketById(ticketId)
-    await updateTicket(ticketVerify.enrollmentId)
+    await updateTicket(ticketId)
     await postPaymentsRep(ticketId,cardData,ticket.TicketType.price)
     return await getPaymentsRep(ticketId)
 }
