@@ -15,10 +15,10 @@ import { prisma } from "../../config"
 //     })
 // }
 
-// export async function getPaymentsRep(ticketId:number) {
-//     return prisma.payment.findFirst({
-//         where:{
-//             ticketId
-//         }
-//     })
-// }
+export async function getPaymentsRep(ticketId:number) {
+    return prisma.payment.findFirst({
+        where:{
+            ticketId
+        }
+    })
+}
