@@ -16,7 +16,7 @@ export async function getTicketService(userId:number) {
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
     if(!enrollment) throw notFoundError()
 
-    if(enrollment.userId!==userId) throw notFoundError()
+    if(enrollment.userId!=userId) throw notFoundError()
     
     return await getTicketRep(enrollment.id)
 }
