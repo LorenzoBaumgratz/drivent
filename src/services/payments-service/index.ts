@@ -29,7 +29,7 @@ export async function postPaymentsService(ticketId:number,cardData:{
     if(enrollment.userId!=userId) throw unauthorizedError()
 
     const ticket=await getTicketById(ticketId)
-    await postPaymentsRep(ticketId,cardData,ticket.TicketType.price)
     await updateTicket(ticketVerify.enrollmentId)
+    await postPaymentsRep(ticketId,cardData,ticket.TicketType.price)
     return await getPaymentsRep(ticketId)
 }
