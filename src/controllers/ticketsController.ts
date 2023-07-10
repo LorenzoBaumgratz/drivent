@@ -32,6 +32,7 @@ export async function postTicket(req:AuthenticatedRequest,res:Response){
       const ticket=await getTicketById(ticketTypeId)
       return res.status(201).send(ticket);
     } catch (error) {
+      if(error.name=== 'UnauthorizedError') return res.sendStatus(401)
       if(error.name==="RequestError") return res.sendStatus(error.status)
       return res.status(httpStatus.NOT_FOUND).send("couldn't post ticket");
     }

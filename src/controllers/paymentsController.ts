@@ -33,6 +33,8 @@ export async function postPayments(req:AuthenticatedRequest,res:Response){
         const payment=await postPaymentsService(ticketId,cardData,userId)
         return res.status(httpStatus.OK).send(payment);
       } catch (error) {
+        if(error.name=== 'UnauthorizedError') return res.sendStatus(401)
+        if(error.name==="RequestError") return res.sendStatus(error.status)
         return res.status(httpStatus.NOT_FOUND).send("couldn't post payment");
       }
 }
