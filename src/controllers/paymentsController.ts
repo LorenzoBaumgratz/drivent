@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares";
-import { getPaymentsService } from "../services/payments-service";
+import { getPaymentsService, postPaymentsService } from "../services/payments-service";
 import httpStatus from "http-status";
 
 export async function getPayments(req:AuthenticatedRequest,res:Response){
@@ -17,10 +17,22 @@ export async function getPayments(req:AuthenticatedRequest,res:Response){
 }
 
 export async function postPayments(req:AuthenticatedRequest,res:Response){
-    try {
+     const userId=req.userId
+    const {ticketId,cardData}=req.body as {
+      ticketId:number,
+      cardData:{
+        issuer:string,
+        number:number,
+        name:string,
+        expirationDate:Date,
+        cvv:number
+      }
+    }
 
-        return res.status(httpStatus.OK).send();
+    try {
+        const payment=await postPaymentsService(ticketId,cardData,userId)
+        return res.status(httpStatus.OK).send(payment);
       } catch (error) {
-        return res.status(httpStatus.NOT_FOUND).send("couldn't get payment");
+        return res.status(httpStatus.NOT_FOUND).send("couldn't post payment");
       }
 }
