@@ -4,10 +4,11 @@ import { getPaymentsService, postPaymentsService } from "../services/payments-se
 import httpStatus from "http-status";
 
 export async function getPayments(req:AuthenticatedRequest,res:Response){
-    const ticketId=req.query
+    const { ticketId } = req.query as Record<string, string>;
+
     const userId=req.userId
     try {
-        const payment=await getPaymentsService(Number(ticketId),userId)
+        const payment=await getPaymentsService(parseInt(ticketId),userId)
         return res.status(httpStatus.OK).send(payment);
       } catch (error) {
         if(error.name=== 'UnauthorizedError') return res.sendStatus(401)

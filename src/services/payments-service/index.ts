@@ -1,6 +1,6 @@
 import { notFoundError, requestError, unauthorizedError } from "../../errors"
 import { getPaymentsRep, postPaymentsRep } from "../../repositories/payments-repository"
-import { getTicketById, ticketIdLinkUserRep, verifyTicketIdRep } from "../../repositories/ticket-repository"
+import { getTicketById, ticketIdLinkUserRep, updateTicket, verifyTicketIdRep } from "../../repositories/ticket-repository"
 
 export async function getPaymentsService(ticketId:number,userId:number) {
     if(!ticketId) throw requestError(400,"Bad request")
@@ -30,6 +30,6 @@ export async function postPaymentsService(ticketId:number,cardData:{
 
     const ticket=await getTicketById(ticketId)
     await postPaymentsRep(ticketId,cardData,ticket.TicketType.price)
-
+    await updateTicket(ticketVerify.enrollmentId)
     return await getPaymentsRep(ticketId)
 }
