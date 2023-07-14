@@ -2,7 +2,7 @@ import supertest from "supertest";
 import app from '@/app';
 import httpStatus from "http-status";
 import { cleanDb, generateValidToken } from "../helpers";
-import { createEnrollmentWithAddress, createSession, createTicket, createTicketType } from "../factories";
+import { createEnrollmentWithAddress, createSession, createTicket, createTicketType, createTicketTypeComHot, createTicketTypeRem, createTicketTypeSemHot } from "../factories";
 import userRepository from "../repositories/user-repository";
 import { createHotel } from "../factories/hotels-factory";
 
@@ -12,11 +12,11 @@ beforeEach(async()=>{
     await cleanDb()
     const token=await generateValidToken()
     const session=await createSession(token)
-    const user=await userRepository.findUserById(session.userId)
-    const enrollment=await createEnrollmentWithAddress(user)
-    const ticketType=await createTicketType()
-    const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
-    const hotel=createHotel()
+    // const user=await userRepository.findUserById(session.userId)
+    // const enrollment=await createEnrollmentWithAddress(user)
+    // const ticketType=await createTicketType()
+    // const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+    // const hotel=createHotel()
     
 })
 
@@ -65,13 +65,38 @@ describe('get /hotels', () => {
         const session=await createSession(token)
         const user=await userRepository.findUserById(session.userId)
         const enrollment=await createEnrollmentWithAddress(user)
-        const ticketType=await createTicketType()
+        const ticketType=await createTicketTypeComHot()
         const ticket=await createTicket(enrollment.id,ticketType.id,"RESERVED")
 
         const result= await server.get("/hotels")
         expect(result.status).toBe(httpStatus.NOT_FOUND);
     });
 
+    it('Ticket é remoto: `402 (payment required)`', async () => {
+        
+        const token=await generateValidToken()
+        const session=await createSession(token)
+        const user=await userRepository.findUserById(session.userId)
+        const enrollment=await createEnrollmentWithAddress(user)
+        const ticketType=await createTicketTypeRem()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+
+        const result= await server.get("/hotels")
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Ticket não inclui hotel: `402 (payment required)`', async () => {
+        
+        const token=await generateValidToken()
+        const session=await createSession(token)
+        const user=await userRepository.findUserById(session.userId)
+        const enrollment=await createEnrollmentWithAddress(user)
+        const ticketType=await createTicketTypeSemHot()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+
+        const result= await server.get("/hotels")
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
     
   });
 
