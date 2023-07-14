@@ -37,6 +37,6 @@ export async function getHotelsByIdService(hotelId:number,userId:number) {
     
     return{
         hotel,
-        Rooms:rooms
+        "Rooms":rooms
     }
 }
