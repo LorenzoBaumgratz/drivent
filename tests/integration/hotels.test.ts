@@ -1,12 +1,12 @@
 import supertest from "supertest";
-import app from "../app";
+import app from '@/app';
 import httpStatus from "http-status";
-import { prisma } from "../config";
+import { cleanDb } from "../helpers";
 
 const server=supertest(app)
 
 beforeEach(async()=>{
-    await prisma.hotel.deleteMany()
+    await cleanDb()
 })
 
 // - Não existe (inscrição, ticket ou hotel): `404 (not found)`
@@ -15,7 +15,7 @@ beforeEach(async()=>{
 
 describe('get /hotels', () => {
     it('get /hotels', async () => {
-        const result= await
+        const result= await server.get("/hotels")
         expect(result.status).toBe(httpStatus.OK);
     });
 
@@ -23,11 +23,11 @@ describe('get /hotels', () => {
     
   });
 
-  describe('get /hotels/:hotelId', () => {
-    it('get /hotels/:hotelId', async () => {
-        const result= await
-        expect(result.status).toBe(httpStatus.OK);
-    });
+//   describe('get /hotels/:hotelId', () => {
+//     it('get /hotels/:hotelId', async () => {
+//         const result= await
+//         expect(result.status).toBe(httpStatus.OK);
+//     });
     
-  });
+//   });
   
