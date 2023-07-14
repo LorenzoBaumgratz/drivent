@@ -2,7 +2,6 @@ import enrollmentRepository from "../../repositories/enrollment-repository"
 import {  getHotelByIdRep, getHotelsRep, getRoomsByHotelIdRep } from "../../repositories/hotels-repository"
 import ticketsRepository from "../../repositories/tickets-repository"
 import { notFoundError, requestError } from "../../errors"
-import { PAYMENT_REQUIRED } from "http-status"
 
 export async function getHotelsService(userId:number) {
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
