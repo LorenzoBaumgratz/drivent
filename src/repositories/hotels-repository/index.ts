@@ -23,7 +23,7 @@ export async function getBookingByUserIdRep(userId:number ) {
 export async function getRoomsByHotelIdRep(hotelId:number) {
     return prisma.room.findMany({
         where:{
-            id:hotelId
+            hotelId
         }
     })
 }
