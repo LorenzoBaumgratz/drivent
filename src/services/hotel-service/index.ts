@@ -6,10 +6,14 @@ import { PAYMENT_REQUIRED } from "http-status"
 
 export async function getHotelsService(userId:number) {
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
+    if(!enrollment) throw notFoundError()
+
     const ticket=await ticketsRepository.findTicketByEnrollmentId(enrollment.id)
+    if(!ticket) throw notFoundError()
+
     const hoteis=await getHotelsRep()
+    if(!hoteis || hoteis.length===0) throw notFoundError()
     
-    if(!enrollment|| !ticket|| !hoteis) throw notFoundError()
     if(ticket.status!=="PAID" || ticket.TicketType.isRemote===true || ticket.TicketType.includesHotel===false) throw requestError(402,"payment required")
 
     return hoteis
