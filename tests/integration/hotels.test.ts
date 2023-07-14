@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from '@/app';
 import httpStatus from "http-status";
 import { cleanDb } from "../helpers";
+import { getHotelsById } from "../controllers/hotels-controller";
 
 const server=supertest(app)
 
@@ -23,11 +24,11 @@ describe('get /hotels', () => {
     
   });
 
-//   describe('get /hotels/:hotelId', () => {
-//     it('get /hotels/:hotelId', async () => {
-//         const result= await
-//         expect(result.status).toBe(httpStatus.OK);
-//     });
+  describe('get /hotels/:hotelId', () => {
+    it('get /hotels/:hotelId', async () => {
+        const result= await server.get(`/hotels/1`)
+        expect(result.status).toBe(httpStatus.OK);
+    });
     
-//   });
+  });
   

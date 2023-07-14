@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares";
 import httpStatus from "http-status";
-import { getHotelsService } from "../services/hotel-service";
+import { getHotelsByIdService, getHotelsService } from "../services/hotel-service";
 
 export async function getHotels(req:AuthenticatedRequest,res:Response) {
     const userId=req.userId
@@ -16,9 +16,15 @@ export async function getHotels(req:AuthenticatedRequest,res:Response) {
 }
 
 export async function getHotelsById(req:AuthenticatedRequest,res:Response) {
+  const hotelId=req.params 
+  const userId=req.userId
+
     try {
-        res.status(httpStatus.OK).send();
+        const result=await getHotelsByIdService(Number(hotelId),userId)
+        res.status(httpStatus.OK).send(result);
       } catch (error) {
+        if(error.name==='NotFoundError') return res.sendStatus(httpStatus.NOT_FOUND)
+        if(error.statusText==='payment required') return res.sendStatus(httpStatus.PAYMENT_REQUIRED)
         return res.sendStatus(httpStatus.BAD_REQUEST);
       }
 }
