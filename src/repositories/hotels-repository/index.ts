@@ -27,3 +27,14 @@ export async function getRoomsByHotelIdRep(hotelId:number) {
         }
     })
 }
+
+export async function teste1(hotelId:number) {
+    return prisma.hotel.findMany({
+        where:{
+            id:hotelId
+        },
+        include:{
+            Rooms:true
+        }
+    })
+}

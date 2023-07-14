@@ -1,5 +1,5 @@
 import enrollmentRepository from "../../repositories/enrollment-repository"
-import {  getHotelByIdRep, getHotelsRep, getRoomsByHotelIdRep } from "../../repositories/hotels-repository"
+import {  getHotelByIdRep, getHotelsRep, getRoomsByHotelIdRep, teste1 } from "../../repositories/hotels-repository"
 import ticketsRepository from "../../repositories/tickets-repository"
 import { notFoundError, requestError } from "../../errors"
 
@@ -34,9 +34,7 @@ export async function getHotelsByIdService(hotelId:number,userId:number) {
 
     const hotel=await getHotelByIdRep(hotelId)
     const rooms=await getRoomsByHotelIdRep(hotelId)
+    const teste=await teste1(hotelId)
     
-    return{
-        hotel,
-        "Rooms":rooms
-    }
+    return teste
 }
