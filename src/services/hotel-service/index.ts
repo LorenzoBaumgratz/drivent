@@ -4,6 +4,9 @@ import ticketsRepository from "../../repositories/tickets-repository"
 import { notFoundError, requestError } from "../../errors"
 
 export async function getHotelsService(userId:number) {
+    const hoteis=await getHotelsRep()
+    if(!hoteis || hoteis.length===0) throw notFoundError()
+
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
     if(!enrollment) throw notFoundError()
 
@@ -12,9 +15,6 @@ export async function getHotelsService(userId:number) {
     if(ticket.status!=="PAID") throw requestError(402,"payment required")
     if(ticket.TicketType.isRemote===true) throw requestError(402,"payment required")
     if(ticket.TicketType.includesHotel===false) throw requestError(402,"payment required")
-
-    const hoteis=await getHotelsRep()
-    if(!hoteis || hoteis.length===0) throw notFoundError()
 
     return hoteis
 }
@@ -34,7 +34,14 @@ export async function getHotelsByIdService(hotelId:number,userId:number) {
 
     const hotel=await getHotelByIdRep(hotelId)
     const rooms=await getRoomsByHotelIdRep(hotelId)
-    const teste=await teste1(hotelId)
-    
-    return teste
+    // const teste=await teste1(hotelId)
+    // console.log(teste)
+    console.log({
+        ...hotel,
+        "Rooms":rooms
+    })
+    return {
+        hotel,
+        "Rooms":rooms
+    }
 }

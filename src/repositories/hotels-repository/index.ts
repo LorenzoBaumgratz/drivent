@@ -28,6 +28,16 @@ export async function getRoomsByHotelIdRep(hotelId:number) {
     })
 }
 
+export async function createRoomByHotelId(hotelId:number,name:string,capacity:number) {
+    return prisma.room.create({
+        data:{
+            capacity,
+            name,
+            hotelId,
+        }
+    })
+}
+
 export async function teste1(hotelId:number) {
     return prisma.hotel.findMany({
         where:{
