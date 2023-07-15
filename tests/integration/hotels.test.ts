@@ -77,7 +77,7 @@ describe('get /hotels', () => {
         const enrollment=await createEnrollmentWithAddress(user)
         await addressRepository.upsert(enrollment.id, full,full)
 
-        const ticketType=await createTicketType()
+        const ticketType=await createTicketTypeComHot()
         const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
         const payment=await createPayment(ticket.id,20)
 
@@ -97,7 +97,7 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
 
     it('Ticket é remoto: `402 (payment required)`', async () => {
@@ -112,7 +112,7 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
 
     it('Ticket não inclui hotel: `402 (payment required)`', async () => {
@@ -127,7 +127,7 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
     it('Tudo certo: 200(OK)`', async () => {
         
@@ -184,7 +184,7 @@ describe('get /hotels', () => {
         const enrollment=await createEnrollmentWithAddress(user)
         await addressRepository.upsert(enrollment.id, full,full)
 
-        const ticketType=await createTicketType()
+        const ticketType=await createTicketTypeComHot()
         const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
         const payment=await createPayment(ticket.id,20)
 
@@ -204,7 +204,7 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
 
     it('Ticket é remoto: `402 (payment required)`', async () => {
@@ -219,7 +219,7 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
 
     it('Ticket não inclui hotel: `402 (payment required)`', async () => {
@@ -234,9 +234,9 @@ describe('get /hotels', () => {
         const payment=await createPayment(ticket.id,20)
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-        expect(result.status).toBe(httpStatus.NOT_FOUND);
+        expect(result.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
-    
+
     it('Tudo certo: 200(OK)', async () => {
         const user=await createUser()
         const token=await generateValidToken(user)
