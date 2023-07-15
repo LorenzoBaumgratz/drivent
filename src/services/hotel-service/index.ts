@@ -34,12 +34,7 @@ export async function getHotelsByIdService(hotelId:number,userId:number) {
 
     const hotel=await getHotelByIdRep(hotelId)
     const rooms=await getRoomsByHotelIdRep(hotelId)
-    // const teste=await teste1(hotelId)
-    // console.log(teste)
-    console.log({
-        ...hotel,
-        "Rooms":rooms
-    })
+    
     return {
         hotel,
         "Rooms":rooms

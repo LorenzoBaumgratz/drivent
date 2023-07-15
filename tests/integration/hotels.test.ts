@@ -39,11 +39,18 @@ beforeEach(async()=>{
 // - Outros erros: `400 (bad request)`
 
 describe('get /hotels', () => {
+
+    it('token não é valido: 401 (UNAUTHORIZED)', async () => {
+        const token = "AAAAAAAAAAA";
+    
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    
+        expect(result.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+
     it('Não existe (inscrição): `404 (not found)', async () => {
         const user=await createUser()
         const token=await generateValidToken(user)
-
-
         
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
         expect(result.status).toBe(httpStatus.NOT_FOUND);
@@ -54,7 +61,6 @@ describe('get /hotels', () => {
         const user=await createUser()
         const token=await generateValidToken(user)
         const enrollment=await createEnrollmentWithAddress(user)
-        // const address=await createhAddressWithCEP()
         
         await addressRepository.upsert(enrollment.id, full,full)
     
@@ -75,7 +81,6 @@ describe('get /hotels', () => {
         const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
         const payment=await createPayment(ticket.id,20)
 
-
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
         expect(result.status).toBe(httpStatus.NOT_FOUND);
     });
@@ -90,7 +95,6 @@ describe('get /hotels', () => {
         const ticketType=await createTicketTypeComHot()
         const ticket=await createTicket(enrollment.id,ticketType.id,"RESERVED")
         const payment=await createPayment(ticket.id,20)
-
 
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
         expect(result.status).toBe(httpStatus.NOT_FOUND);
@@ -107,7 +111,6 @@ describe('get /hotels', () => {
         const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
         const payment=await createPayment(ticket.id,20)
 
-
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
         expect(result.status).toBe(httpStatus.NOT_FOUND);
     });
@@ -123,11 +126,10 @@ describe('get /hotels', () => {
         const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
         const payment=await createPayment(ticket.id,20)
 
-
         const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
         expect(result.status).toBe(httpStatus.NOT_FOUND);
     });
-    it('Tudo certo)`', async () => {
+    it('Tudo certo: 200(OK)`', async () => {
         
         const user=await createUser()
         const token=await generateValidToken(user)
@@ -145,7 +147,97 @@ describe('get /hotels', () => {
   });
 
   describe('get /hotels/:hotelId', () => {
-    it('get /hotels/:hotelId', async () => {
+    it('token não é valido: 401 (UNAUTHORIZED)', async () => {
+        const token = "AAAAAAAAAAA";
+    
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    
+        expect(result.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+
+    it('Não existe (inscrição): `404 (not found)', async () => {
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Não existe (ticket): `404 (not found)', async () => {
+
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        const enrollment=await createEnrollmentWithAddress(user)
+        
+        await addressRepository.upsert(enrollment.id, full,full)
+    
+        const ticketType=await createTicketType()
+
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Não existe (hotel): `404 (not found)', async () => {
+        
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        const enrollment=await createEnrollmentWithAddress(user)
+        await addressRepository.upsert(enrollment.id, full,full)
+
+        const ticketType=await createTicketType()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+        const payment=await createPayment(ticket.id,20)
+
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Ticket não foi pago: `402 (payment required)`', async () => {
+        
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        const enrollment=await createEnrollmentWithAddress(user)
+        await addressRepository.upsert(enrollment.id, full,full)
+
+        const ticketType=await createTicketTypeComHot()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"RESERVED")
+        const payment=await createPayment(ticket.id,20)
+
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Ticket é remoto: `402 (payment required)`', async () => {
+        
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        const enrollment=await createEnrollmentWithAddress(user)
+        await addressRepository.upsert(enrollment.id, full,full)
+
+        const ticketType=await createTicketTypeRem()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+        const payment=await createPayment(ticket.id,20)
+
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Ticket não inclui hotel: `402 (payment required)`', async () => {
+        
+        const user=await createUser()
+        const token=await generateValidToken(user)
+        const enrollment=await createEnrollmentWithAddress(user)
+        await addressRepository.upsert(enrollment.id, full,full)
+
+        const ticketType=await createTicketTypeSemHot()
+        const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+        const payment=await createPayment(ticket.id,20)
+
+        const result = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+        expect(result.status).toBe(httpStatus.NOT_FOUND);
+    });
+    
+    it('Tudo certo: 200(OK)', async () => {
         const user=await createUser()
         const token=await generateValidToken(user)
         const enrollment=await createEnrollmentWithAddress(user)
