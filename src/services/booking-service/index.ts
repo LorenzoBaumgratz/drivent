@@ -17,12 +17,12 @@ export async function postBookingService(userId:number,roomId:number) {
     const room=await checkRoomId(roomId)
     if(!room) throw notFoundError()
 
-    const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
-    if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
-
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
     const ticket=await ticketsRepository.findTicketByEnrollmentId(enrollment.id)
     if(ticket.status!=="PAID"|| ticket.TicketType.isRemote!==true ||ticket.TicketType.includesHotel!==true) throw requestError(403,"Outside business rules")
+
+    const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
+    if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
     
     const booking=await postBookingRep(userId,roomId)
     return booking.id
