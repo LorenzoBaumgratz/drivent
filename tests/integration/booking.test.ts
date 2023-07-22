@@ -163,3 +163,83 @@ describe('POST /booking', () => {
     
 
 });
+
+describe('PUT /booking', () => {
+
+  it('should respond with status 401 if no token is given', async () => {
+    const response = await server.put('/booking');
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it('should respond with status 401 if given token is not valid', async () => {
+    const token = faker.lorem.word();
+
+    const response = await server.put('/booking').set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it('should respond with status 401 if there is no session for given token', async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+
+    const response = await server.put('/booking').set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it('should respond with status 404 when roomId doesnt exists', async () => {
+    const user=await createUser()
+    const token=await generateValidToken(user)
+    const enrollment=await createEnrollmentWithAddress(user)
+    const ticketType=await createTicketTypeComHot()
+    const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+    const hotel=await createHotel()
+
+    const result = await server.put('/booking').set('Authorization', `Bearer ${token}`).send({
+      "roomId":157
+    });
+
+    expect(result.status).toBe(httpStatus.NOT_FOUND);
+  });
+
+  it('should respond with status 403 when roomId is full', async () => {
+    const user=await createUser()
+    const token=await generateValidToken(user)
+    const enrollment=await createEnrollmentWithAddress(user)
+    const ticketType=await createTicketTypeComHot()
+    const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+    const hotel=await createHotel()
+    const room=await createRoom(hotel.id)
+    const roomPUT=await createRoom(hotel.id)
+    const booking=await createBooking(user.id,room.id)
+    const bookingPUTRoom=await createBooking(user.id,roomPUT.id)
+    const numberOfRoomsBooked=await findBookingWithRoomId(room.id)
+
+    const body = {roomId:roomPUT.id};
+
+    const result = await server.put(`/booking/${booking.id}`).set('Authorization', `Bearer ${token}`).send(body);
+    expect(result.status).toBe(httpStatus.FORBIDDEN);
+    
+  });
+
+  it('should respond with status 200 when roomId is not full', async () => {
+    const user=await createUser()
+    const token=await generateValidToken(user)
+    const enrollment=await createEnrollmentWithAddress(user)
+    const ticketType=await createTicketTypeComHot()
+    const ticket=await createTicket(enrollment.id,ticketType.id,"PAID")
+    const hotel=await createHotel()
+    const room=await createRoom(hotel.id)
+    const roomPUT=await createRoom(hotel.id)
+    const booking=await createBooking(user.id,room.id)
+
+    const body = {roomId:roomPUT.id};
+    const result = await server.put(`/booking/${booking.id}`).set('Authorization', `Bearer ${token}`).send(body);
+    expect(result.status).toBe(httpStatus.OK);
+    
+  });
+    
+
+});
