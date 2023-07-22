@@ -31,8 +31,8 @@ export async function putBookingController(req:AuthenticatedRequest,res:Response
     const {roomId}=req.body
     const {bookingId}=req.params
     try{
-        const booking=await putBookingService(userId,roomId,Number(bookingId))
-        return res.status(200).send(booking)  
+        const id=await putBookingService(userId,roomId,Number(bookingId))
+        return res.status(200).send({bookingId:id})
     }catch(error){
         if(error.statusText==="Outside business rules") return res.sendStatus(httpStatus.FORBIDDEN)
         return res.sendStatus(httpStatus.NOT_FOUND)
