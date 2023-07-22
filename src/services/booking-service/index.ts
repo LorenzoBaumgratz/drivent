@@ -1,3 +1,4 @@
+import { TicketStatus } from "@prisma/client"
 import { notFoundError, requestError } from "../../errors"
 import { checkRoomId, findBookingByUserId, findBookingWithRoomId, getBookingRep, postBookingRep, putBookingRep } from "../../repositories/booking-repository"
 import enrollmentRepository from "../../repositories/enrollment-repository"
@@ -16,14 +17,17 @@ export async function postBookingService(userId:number,roomId:number) {
 
     const enrollment=await enrollmentRepository.findWithAddressByUserId(userId)
     const ticket=await ticketsRepository.findTicketByEnrollmentId(enrollment.id)
-    if(ticket.status!=="PAID"|| ticket.TicketType.isRemote!==true ||ticket.TicketType.includesHotel!==true) throw requestError(403,"Outside business rules")
+    if(ticket.status!==TicketStatus.PAID|| ticket.TicketType.isRemote ||!ticket.TicketType.includesHotel) throw requestError(403,"Outside business rules")
 
     const room=await checkRoomId(roomId)
-    if(!room) throw notFoundError()
+    if(!room ) throw notFoundError()
 
     const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
     if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
     
+    // const hasBook=await findBookingByUserId(userId)
+    // if(hasBook) throw requestError(403,"Outside business rules") 
+
     const booking=await postBookingRep(userId,roomId)
     return booking.id
 }
@@ -35,7 +39,7 @@ export async function putBookingService(userId:number,roomId:number,bookingId:nu
 
     const room=await checkRoomId(roomId)
     if(!room) throw notFoundError()
-    
+
     const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
     if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
 

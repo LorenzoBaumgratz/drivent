@@ -15,13 +15,14 @@ export async function getBookingController(req:AuthenticatedRequest,res:Response
 
 export async function postBookingController(req:AuthenticatedRequest,res:Response) {
     const userId=req.userId
-    const {roomId}=req.body
+    const {roomId}=req.body as {roomId:number}
     try{
-        const bookingId=await postBookingService(userId,roomId)
-        return res.status(200).send(bookingId)
+        const id=await postBookingService(userId,roomId)
+        return res.status(200).send({bookingId:id})
     }catch(error){
         if(error.statusText==="Outside business rules") return res.sendStatus(httpStatus.FORBIDDEN)
-        return res.sendStatus(httpStatus.NOT_FOUND)
+        if(error.name=== 'NotFoundError') return res.sendStatus(httpStatus.NOT_FOUND)
+        return res.sendStatus(httpStatus.UNAUTHORIZED)
     }
 }
 

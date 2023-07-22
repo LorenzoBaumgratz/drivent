@@ -36,7 +36,7 @@ export async function putBookingRep(roomId:number,bookingId:number) {
 }
 
 export async function checkRoomId(roomId:number) {
-    return prisma.room.findUnique({
+    return prisma.room.findFirst({
         where:{
             id:roomId
         }
@@ -55,6 +55,17 @@ export async function findBookingByUserId(userId:number) {
     return prisma.booking.findFirst({
         where:{
             userId
+        },
+        include:{
+            Room:true
+        }
+    })
+}
+
+export async function findBookingByRoomId(roomId:number) {
+    return prisma.booking.findFirst({
+        where:{
+            roomId
         },
         include:{
             Room:true
