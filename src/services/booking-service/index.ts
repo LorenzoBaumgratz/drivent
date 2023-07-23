@@ -1,11 +1,11 @@
 import { TicketStatus } from "@prisma/client"
 import { notFoundError, requestError } from "../../errors"
-import { checkRoomId, findBookingByUserId, findBookingWithRoomId, getBookingRep, postBookingRep, putBookingRep } from "../../repositories/booking-repository"
 import enrollmentRepository from "../../repositories/enrollment-repository"
 import ticketsRepository from "../../repositories/tickets-repository"
+import bookingRepository from "../../repositories/booking-repository"
 
 export async function getBookingService(userId:number) {
-    const result=await getBookingRep(userId)
+    const result=await bookingRepository.getBookingRep(userId)
     if(!result) throw notFoundError()
     return {
         "id":result.id,
@@ -19,30 +19,27 @@ export async function postBookingService(userId:number,roomId:number) {
     const ticket=await ticketsRepository.findTicketByEnrollmentId(enrollment.id)
     if(ticket.status!==TicketStatus.PAID|| ticket.TicketType.isRemote ||!ticket.TicketType.includesHotel) throw requestError(403,"Outside business rules")
 
-    const room=await checkRoomId(roomId)
+    const room=await bookingRepository.checkRoomId(roomId)
     if(!room ) throw notFoundError()
 
-    const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
+    const numberOfRoomsBooked=await bookingRepository.findBookingWithRoomId(roomId)
     if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
-    
-    // const hasBook=await findBookingByUserId(userId)
-    // if(hasBook) throw requestError(403,"Outside business rules") 
 
-    const booking=await postBookingRep(userId,roomId)
+    const booking=await bookingRepository.postBookingRep(userId,roomId)
     return booking.id
 }
 
 export async function putBookingService(userId:number,roomId:number,bookingId:number) {
 
-    const hasBooking=await findBookingByUserId(userId)
+    const hasBooking=await bookingRepository.findBookingByUserId(userId)
     if(!hasBooking) throw requestError(403,"Outside business rules") 
 
-    const room=await checkRoomId(roomId)
+    const room=await bookingRepository.checkRoomId(roomId)
     if(!room) throw notFoundError()
 
-    const numberOfRoomsBooked=await findBookingWithRoomId(roomId)
+    const numberOfRoomsBooked=await bookingRepository.findBookingWithRoomId(roomId)
     if(room.capacity===numberOfRoomsBooked.length) throw requestError(403,"Outside business rules") 
 
-    const booking=await putBookingRep(roomId,bookingId)
+    const booking=await bookingRepository.putBookingRep(roomId,bookingId)
     return booking.id
 }

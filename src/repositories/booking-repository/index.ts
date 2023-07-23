@@ -1,7 +1,7 @@
 import { Booking, Room } from "@prisma/client";
 import { prisma } from "../../config"
 
-export async function getBookingRep(userId:number): Promise<Booking & {
+ async function getBookingRep(userId:number): Promise<Booking & {
     Room: Room;
 }> {
 
@@ -15,7 +15,7 @@ export async function getBookingRep(userId:number): Promise<Booking & {
     })
 }
 
-export async function postBookingRep(userId:number,roomId:number) {
+ async function postBookingRep(userId:number,roomId:number) {
     return prisma.booking.create({
         data:{
             userId,
@@ -24,7 +24,7 @@ export async function postBookingRep(userId:number,roomId:number) {
     })
 }
 
-export async function putBookingRep(roomId:number,bookingId:number) {
+ async function putBookingRep(roomId:number,bookingId:number) {
     return prisma.booking.update({
         data:{
             roomId
@@ -35,7 +35,7 @@ export async function putBookingRep(roomId:number,bookingId:number) {
     })
 }
 
-export async function checkRoomId(roomId:number) {
+ async function checkRoomId(roomId:number) {
     return prisma.room.findFirst({
         where:{
             id:roomId
@@ -43,7 +43,7 @@ export async function checkRoomId(roomId:number) {
     })
 }
 
-export async function findBookingWithRoomId(roomId:number) {
+ async function findBookingWithRoomId(roomId:number) {
     return prisma.booking.findMany({
         where:{
             roomId
@@ -51,7 +51,7 @@ export async function findBookingWithRoomId(roomId:number) {
     })
 }
 
-export async function findBookingByUserId(userId:number) {
+ async function findBookingByUserId(userId:number) {
     return prisma.booking.findFirst({
         where:{
             userId
@@ -62,7 +62,7 @@ export async function findBookingByUserId(userId:number) {
     })
 }
 
-export async function findBookingByRoomId(roomId:number) {
+ async function findBookingByRoomId(roomId:number) {
     return prisma.booking.findFirst({
         where:{
             roomId
@@ -72,3 +72,13 @@ export async function findBookingByRoomId(roomId:number) {
         }
     })
 }
+
+export default {
+    findBookingByRoomId,
+    findBookingByUserId,
+    findBookingWithRoomId,
+    checkRoomId,
+    putBookingRep,
+    postBookingRep,
+    getBookingRep
+  };

@@ -1,16 +1,13 @@
 import faker from '@faker-js/faker';
-import { TicketStatus } from '@prisma/client';
 import httpStatus from 'http-status';
 import * as jwt from 'jsonwebtoken';
 import supertest from 'supertest';
 import { createEnrollmentWithAddress, createUser, createTicketType, createTicket, createTicketTypeComHot } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
-import { prisma } from '@/config';
 import app, { init } from '@/app';
 import { createRoom } from '../factories/rooms-factory';
 import { createHotel } from '../factories/hotels-factory';
 import { createBooking } from '../factories/booking-factory';
-import { checkRoomId, findBookingWithRoomId } from '@/repositories/booking-repository';
 
 const server = supertest(app);
 
@@ -137,7 +134,6 @@ describe('POST /booking', () => {
     const hotel=await createHotel()
     const room=await createRoom(hotel.id)
     const booking=await createBooking(user.id,room.id)
-    const numberOfRoomsBooked=await findBookingWithRoomId(room.id)
 
     const body = {roomId:room.id};
 
@@ -215,7 +211,6 @@ describe('PUT /booking', () => {
     const roomPUT=await createRoom(hotel.id)
     const booking=await createBooking(user.id,room.id)
     const bookingPUTRoom=await createBooking(user.id,roomPUT.id)
-    const numberOfRoomsBooked=await findBookingWithRoomId(room.id)
 
     const body = {roomId:roomPUT.id};
 
